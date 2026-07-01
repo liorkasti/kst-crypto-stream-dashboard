@@ -65,6 +65,9 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .claude/
 packages/shared/docs/
 
+# Personal dev workflow tooling (local-only, not part of the deliverable)
+scripts/create-pr.sh
+
 # npm lockfile artifact (monorepo uses pnpm)
 package-lock.json
 
