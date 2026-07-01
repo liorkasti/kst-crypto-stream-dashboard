@@ -21,9 +21,17 @@ export function PriceTable({ assets, onSelect }: Props) {
       </TableHeader>
       <TableBody>
         {assets.map((asset) => (
-          <TableRow key={asset.id} onClick={() => onSelect(asset)} className="cursor-pointer">
+          <TableRow key={asset.id}>
             <TableCell className="font-medium">
-              {asset.name} <span className="text-gray-400 uppercase">{asset.symbol}</span>
+              {/* Real <button>, not role="button" on the <tr> — keeps mouse
+                  and keyboard activation on the same element. */}
+              <button
+                type="button"
+                onClick={() => onSelect(asset)}
+                className="rounded text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              >
+                {asset.name} <span className="text-gray-400 uppercase">{asset.symbol}</span>
+              </button>
             </TableCell>
             <TableCell className="text-right tabular-nums">{formatUsd(asset.price)}</TableCell>
             <TableCell

@@ -7,9 +7,7 @@ import { Loading } from '@/components/states/Loading'
 import { Empty } from '@/components/states/Empty'
 import { ErrorState } from '@/components/states/ErrorState'
 
-// recharts is the single largest dependency in the bundle and is only
-// ever needed once a user clicks a coin — deferring it keeps the
-// initial page load lean.
+// recharts is the largest dependency in the bundle; deferred until clicked.
 const CoinDetailModal = lazy(() =>
   import('@/components/CoinDetailModal').then((m) => ({ default: m.CoinDetailModal })),
 )
@@ -25,7 +23,7 @@ export default function App() {
         <FreshnessBadge
           lastUpdatedAt={data?.lastUpdatedAt ?? null}
           stale={data?.stale ?? true}
-          connected={connection !== 'reconnecting'}
+          connection={connection}
         />
       </header>
 
@@ -37,7 +35,12 @@ export default function App() {
       {selected && (
         <Suspense
           fallback={
-            <div className="fixed inset-0 flex items-center justify-center bg-black/30">
+            <div
+              className="fixed inset-0 flex items-center justify-center bg-black/30"
+              role="status"
+              aria-live="polite"
+              aria-busy="true"
+            >
               <div className="animate-pulse rounded bg-white px-6 py-4 text-sm text-gray-500 shadow-lg">
                 Loading…
               </div>

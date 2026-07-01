@@ -1,23 +1,26 @@
 import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { formatSecondsAgo } from '@/lib/format'
+import type { ConnectionState } from '@/hooks/useLivePrices'
 
 interface Props {
   lastUpdatedAt: string | null
   stale: boolean
-  connected: boolean
+  connection: ConnectionState
 }
 
-export function FreshnessBadge({ lastUpdatedAt, stale, connected }: Props) {
-  // Ticks every second purely to re-render "updated Ns ago" — the stale
-  // verdict itself always comes from the server, never computed here.
+export function FreshnessBadge({ lastUpdatedAt, stale, connection }: Props) {
+  // Re-renders "updated Ns ago" each second; stale itself is server-owned.
   const [, forceTick] = useState(0)
   useEffect(() => {
     const id = setInterval(() => forceTick((n) => n + 1), 1000)
     return () => clearInterval(id)
   }, [])
 
-  if (!connected) return <Badge variant="error">reconnecting…</Badge>
+  // 'connecting' (first load) vs 'reconnecting' (dropped) avoids implying
+  // a lost connection that was never established.
+  if (connection === 'connecting') return <Badge variant="neutral">connecting…</Badge>
+  if (connection === 'reconnecting') return <Badge variant="error">reconnecting…</Badge>
 
   return (
     <Badge variant={stale ? 'stale' : 'fresh'}>

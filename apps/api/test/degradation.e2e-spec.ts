@@ -7,10 +7,7 @@ import { pricesResponseSchema } from '@kin/shared';
 import { AppModule } from '../src/app.module';
 import { truncateAll, seedStaleSnapshot } from './helpers/db';
 
-// Proves the brief's headline resilience requirement: when upstream is
-// down, the API keeps serving last-known-good data with stale:true —
-// never an error, never an empty body. SIMULATE_UPSTREAM_DOWN=true is
-// forced on for this whole file via test/setup-e2e.ts.
+// SIMULATE_UPSTREAM_DOWN=true is forced on for this file via setup-e2e.ts.
 describe('Graceful degradation (e2e)', () => {
   let app: INestApplication<App>;
   let prisma: PrismaClient;
@@ -40,9 +37,7 @@ describe('Graceful degradation (e2e)', () => {
       .get('/api/prices')
       .expect(200);
 
-    // Parsing through the shared contract schema (not just asserting on
-    // res.body directly) gives real types instead of `any`, and doubles
-    // as a check that the response actually matches the frontend's contract.
+    // Parsed through the shared schema: real types, and checks the contract.
     const body = pricesResponseSchema.parse(res.body);
 
     expect(body.stale).toBe(true);

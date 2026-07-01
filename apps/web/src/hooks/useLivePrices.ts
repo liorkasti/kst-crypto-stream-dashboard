@@ -21,8 +21,12 @@ export function useLivePrices() {
 
     const source = new EventSource(STREAM_URL)
     sourceRef.current = source
+    let hasOpened = false
 
-    source.onopen = () => setConnection('open')
+    source.onopen = () => {
+      hasOpened = true
+      setConnection('open')
+    }
     source.onmessage = (event) => {
       try {
         const parsed = pricesResponseSchema.parse(JSON.parse(event.data))
@@ -33,7 +37,8 @@ export function useLivePrices() {
         // malformed frame — keep last-good data on screen, wait for the next tick
       }
     }
-    source.onerror = () => setConnection('reconnecting')
+    // onerror fires on first-attempt failures too — don't mislabel those "reconnecting".
+    source.onerror = () => setConnection(hasOpened ? 'reconnecting' : 'connecting')
 
     return () => source.close()
   }, [])
