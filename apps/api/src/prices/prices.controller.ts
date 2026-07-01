@@ -35,14 +35,9 @@ export class PricesController {
     return this.prices.getHistory(id, window);
   }
 
-  // Pushes the full latest snapshot on every refresh tick + a 5s heartbeat
-  // (so a stalled upstream still visibly flips the client to "stale").
-  // exhaustMap caps in-flight getLatest() calls to 1 per connection AND
-  // drops ticks that arrive while one is already in flight, rather than
-  // queueing them (concatMap would) — since every frame is a full
-  // snapshot, not a delta, a dropped intermediate tick is harmless and
-  // this avoids unbounded queue growth if the DB is ever slower than the
-  // tick cadence.
+  // exhaustMap drops ticks while a getLatest() call is in flight instead
+  // of queueing them — safe since each frame is a full snapshot, and it
+  // caps concurrency without unbounded buildup under a slow DB.
   @Sse('stream')
   stream$(): Observable<MessageEvent> {
     return this.stream.events$.pipe(

@@ -6,8 +6,7 @@ export async function truncateAll(prisma: PrismaClient): Promise<void> {
   await prisma.refreshMeta.deleteMany();
 }
 
-// Seeds a snapshot that's already old enough to be stale, so the
-// degradation test doesn't have to wait out STALE_THRESHOLD_MS.
+// Already old enough to be stale — skips waiting out STALE_THRESHOLD_MS.
 export async function seedStaleSnapshot(prisma: PrismaClient): Promise<void> {
   await prisma.asset.create({
     data: {

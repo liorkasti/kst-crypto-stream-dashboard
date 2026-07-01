@@ -24,9 +24,7 @@ export class RefreshService {
       const markets = await this.upstream.fetchTopMarkets();
       const now = new Date();
 
-      // upsert() returns the full row, so the transaction result is reused
-      // directly below instead of a follow-up findMany — one fewer DB
-      // round-trip on every tick.
+      // upsert() returns the row, reused below instead of a follow-up findMany.
       const results = await this.prisma.$transaction([
         ...markets.map((m) =>
           this.prisma.asset.upsert({
@@ -55,9 +53,7 @@ export class RefreshService {
         }),
       ]);
 
-      // Sliced by markets.length rather than slice(0, -1) — robust to the
-      // transaction array being reordered or extended later, since it
-      // doesn't assume the refreshMeta upsert is always last.
+      // markets.length, not slice(0, -1) — doesn't assume refreshMeta is last.
       const assets = results.slice(0, markets.length) as Awaited<
         ReturnType<typeof this.prisma.asset.upsert>
       >[];
@@ -75,8 +71,7 @@ export class RefreshService {
 
       this.stream.notify();
     } catch (err) {
-      // Failure is expected and handled: last-known-good stays in the DB,
-      // lastSuccessAt does NOT advance (so /prices flips stale on its own), next tick retries.
+      // lastSuccessAt not advanced -> /prices flips stale on its own; next tick retries.
       this.logger.warn(
         `Refresh tick failed, serving last-known-good: ${(err as Error).message}`,
       );

@@ -1,14 +1,6 @@
-// Must set this before anything imports config/env.ts, which freezes
-// process.env into a parsed constant at module-load time — toggling it
-// inside a test body would be too late. dotenv.config() won't override
-// an already-set var, so this order is what makes the flag stick.
-// Same reasoning for .env vs .env.example: .env is gitignored, so a
-// fresh checkout has none — .env.example is loaded second as a
-// deterministic fallback without clobbering real local values.
-//
-// require() (not import) is deliberate here too, for the same hoisting
-// reason as jest.setup.ts — imports would be hoisted above the
-// process.env assignment above, defeating the ordering this file exists for.
+// Must be set before config/env.ts parses process.env — import hoisting
+// would reorder an `import` above this, so require() is used instead.
+// Same .env/.env.example fallback reasoning as jest.setup.ts.
 process.env.SIMULATE_UPSTREAM_DOWN = 'true';
 // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
 const path = require('path');

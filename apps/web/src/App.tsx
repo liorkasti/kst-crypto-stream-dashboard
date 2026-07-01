@@ -7,9 +7,7 @@ import { Loading } from '@/components/states/Loading'
 import { Empty } from '@/components/states/Empty'
 import { ErrorState } from '@/components/states/ErrorState'
 
-// recharts is the single largest dependency in the bundle and is only
-// ever needed once a user clicks a coin — deferring it keeps the
-// initial page load lean.
+// recharts is the largest dependency in the bundle; deferred until clicked.
 const CoinDetailModal = lazy(() =>
   import('@/components/CoinDetailModal').then((m) => ({ default: m.CoinDetailModal })),
 )

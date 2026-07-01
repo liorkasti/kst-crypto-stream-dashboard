@@ -23,11 +23,8 @@ export function PriceTable({ assets, onSelect }: Props) {
         {assets.map((asset) => (
           <TableRow key={asset.id}>
             <TableCell className="font-medium">
-              {/* role="button" on a <tr> is an invalid ARIA override for
-                  table semantics, and a row-level onClick made the whole
-                  row a mouse-only activation target while only this button
-                  was keyboard-focusable — a real pointer/keyboard mismatch.
-                  The button is now the only activation surface, for both. */}
+              {/* Real <button>, not role="button" on the <tr> — keeps mouse
+                  and keyboard activation on the same element. */}
               <button
                 type="button"
                 onClick={() => onSelect(asset)}

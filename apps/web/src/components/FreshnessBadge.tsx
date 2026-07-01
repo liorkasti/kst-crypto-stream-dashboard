@@ -10,16 +10,15 @@ interface Props {
 }
 
 export function FreshnessBadge({ lastUpdatedAt, stale, connection }: Props) {
-  // Ticks every second purely to re-render "updated Ns ago" — the stale
-  // verdict itself always comes from the server, never computed here.
+  // Re-renders "updated Ns ago" each second; stale itself is server-owned.
   const [, forceTick] = useState(0)
   useEffect(() => {
     const id = setInterval(() => forceTick((n) => n + 1), 1000)
     return () => clearInterval(id)
   }, [])
 
-  // Distinguishing 'connecting' (first load) from 'reconnecting' (dropped
-  // after being open) avoids implying a lost connection on initial load.
+  // 'connecting' (first load) vs 'reconnecting' (dropped) avoids implying
+  // a lost connection that was never established.
   if (connection === 'connecting') return <Badge variant="neutral">connecting…</Badge>
   if (connection === 'reconnecting') return <Badge variant="error">reconnecting…</Badge>
 
