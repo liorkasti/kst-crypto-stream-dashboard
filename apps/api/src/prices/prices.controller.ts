@@ -7,7 +7,7 @@ import {
   Query,
   Sse,
 } from '@nestjs/common';
-import { Observable, concatMap, from } from 'rxjs';
+import { Observable, exhaustMap, from } from 'rxjs';
 import { historyQuerySchema } from '@kin/shared';
 import { PricesService } from './prices.service';
 import { PricesStream } from './prices.stream';
@@ -37,14 +37,18 @@ export class PricesController {
 
   // Pushes the full latest snapshot on every refresh tick + a 5s heartbeat
   // (so a stalled upstream still visibly flips the client to "stale").
-  // concatMap (not mergeMap) caps in-flight getLatest() calls to 1 per
-  // connection — under load, ticks could otherwise arrive faster than the
-  // DB query resolves, stacking overlapping queries and risking frames
-  // arriving out of emission order.
+  // exhaustMap caps in-flight getLatest() calls to 1 per connection AND
+  // drops ticks that arrive while one is already in flight, rather than
+  // queueing them (concatMap would) — since every frame is a full
+  // snapshot, not a delta, a dropped intermediate tick is harmless and
+  // this avoids unbounded queue growth if the DB is ever slower than the
+  // tick cadence.
   @Sse('stream')
   stream$(): Observable<MessageEvent> {
     return this.stream.events$.pipe(
-      concatMap(() => from(this.prices.getLatest().then((data) => ({ data })))),
+      exhaustMap(() =>
+        from(this.prices.getLatest().then((data) => ({ data }))),
+      ),
     );
   }
 }

@@ -25,10 +25,14 @@ export function PriceTable({ assets, onSelect }: Props) {
             key={asset.id}
             onClick={() => onSelect(asset)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                onSelect(asset)
-              }
+              // Enter activates on keydown (native behavior); Space is
+              // deliberately deferred to keyup below — firing it here would
+              // repeat-select on every keydown auto-repeat while held.
+              if (e.key === 'Enter') onSelect(asset)
+              else if (e.key === ' ') e.preventDefault()
+            }}
+            onKeyUp={(e) => {
+              if (e.key === ' ') onSelect(asset)
             }}
             tabIndex={0}
             role="button"
