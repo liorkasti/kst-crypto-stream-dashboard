@@ -1,0 +1,17 @@
+{
+  "name": "kst-crypto-stream-dashboard",
+  "private": true,
+  "packageManager": "pnpm@11.5.2",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "migrate": "pnpm --filter api exec prisma migrate deploy",
+    "db:up": "docker run --name kin-pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kin -p 5432:5432 -d postgres:16",
+    "db:down": "docker rm -f kin-pg"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  }
+}

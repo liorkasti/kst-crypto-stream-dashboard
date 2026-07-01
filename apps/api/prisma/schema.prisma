@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Asset {
+  id        String   @id @default(uuid())
+  symbol    String   @unique
+  name      String
+  price     Decimal  @db.Decimal(20, 8)
+  change24h Decimal  @db.Decimal(10, 4)
+  marketCap BigInt
+  updatedAt DateTime
+
+  history PriceHistory[]
+}
+
+model PriceHistory {
+  id      String   @id @default(uuid())
+  assetId String
+  asset   Asset    @relation(fields: [assetId], references: [id])
+  price   Decimal  @db.Decimal(20, 8)
+  ts      DateTime @default(now())
+
+  @@index([assetId, ts])
+}
+
+// Singleton row (id always 1) — single source of truth for freshness.
+model RefreshMeta {
+  id            Int      @id @default(1)
+  lastSuccessAt DateTime
+}
