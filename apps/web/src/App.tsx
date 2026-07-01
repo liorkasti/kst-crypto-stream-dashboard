@@ -35,7 +35,15 @@ export default function App() {
       {data && data.data.length > 0 && <PriceTable assets={data.data} onSelect={setSelected} />}
 
       {selected && (
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 flex items-center justify-center bg-black/30">
+              <div className="animate-pulse rounded bg-white px-6 py-4 text-sm text-gray-500 shadow-lg">
+                Loading…
+              </div>
+            </div>
+          }
+        >
           <CoinDetailModal asset={selected} onClose={() => setSelected(null)} />
         </Suspense>
       )}

@@ -32,7 +32,9 @@ export async function fetchHistory(
   assetId: string,
   window: HistoryQuery['window'] = '1h',
 ): Promise<PricePoint[]> {
-  const res = await fetchWithTimeout(`${API_BASE}/assets/${assetId}/history?window=${window}`)
+  const res = await fetchWithTimeout(
+    `${API_BASE}/assets/${encodeURIComponent(assetId)}/history?window=${encodeURIComponent(window)}`,
+  )
   if (!res.ok) throw new Error(`Failed to fetch history: ${res.status}`)
   return z.array(pricePointSchema).parse(await res.json())
 }
