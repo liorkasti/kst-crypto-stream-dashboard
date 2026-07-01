@@ -16,5 +16,42 @@ services:
       timeout: 5s
       retries: 10
 
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      # `db`, not `localhost` — container-to-container networking resolves
+      # by compose service name, not the host machine's loopback.
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/kin?schema=public
+      PORT: 3000
+      WEB_ORIGIN: http://localhost:5173
+      UPSTREAM_BASE_URL: https://api.coingecko.com/api/v3
+      REFRESH_MS: 15000
+      STALE_THRESHOLD_MS: 30000
+      SIMULATE_UPSTREAM_DOWN: "false"
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   kin_pg_data:
