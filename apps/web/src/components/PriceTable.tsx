@@ -21,25 +21,23 @@ export function PriceTable({ assets, onSelect }: Props) {
       </TableHeader>
       <TableBody>
         {assets.map((asset) => (
-          <TableRow
-            key={asset.id}
-            onClick={() => onSelect(asset)}
-            onKeyDown={(e) => {
-              // Enter activates on keydown (native behavior); Space is
-              // deliberately deferred to keyup below — firing it here would
-              // repeat-select on every keydown auto-repeat while held.
-              if (e.key === 'Enter') onSelect(asset)
-              else if (e.key === ' ') e.preventDefault()
-            }}
-            onKeyUp={(e) => {
-              if (e.key === ' ') onSelect(asset)
-            }}
-            tabIndex={0}
-            role="button"
-            className="cursor-pointer"
-          >
+          <TableRow key={asset.id} onClick={() => onSelect(asset)} className="cursor-pointer">
             <TableCell className="font-medium">
-              {asset.name} <span className="text-gray-400 uppercase">{asset.symbol}</span>
+              {/* role="button" on a <tr> is an invalid ARIA override for
+                  table semantics — a real <button> here gives keyboard
+                  users a proper focus target with native Enter/Space
+                  activation, no manual key handling needed. stopPropagation
+                  avoids double-firing onSelect via the row's own onClick. */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onSelect(asset)
+                }}
+                className="rounded text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+              >
+                {asset.name} <span className="text-gray-400 uppercase">{asset.symbol}</span>
+              </button>
             </TableCell>
             <TableCell className="text-right tabular-nums">{formatUsd(asset.price)}</TableCell>
             <TableCell

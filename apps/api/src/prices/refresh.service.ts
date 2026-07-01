@@ -55,7 +55,10 @@ export class RefreshService {
         }),
       ]);
 
-      const assets = results.slice(0, -1) as Awaited<
+      // Sliced by markets.length rather than slice(0, -1) — robust to the
+      // transaction array being reordered or extended later, since it
+      // doesn't assume the refreshMeta upsert is always last.
+      const assets = results.slice(0, markets.length) as Awaited<
         ReturnType<typeof this.prisma.asset.upsert>
       >[];
       const bySymbol = new Map(assets.map((a) => [a.symbol, a]));
