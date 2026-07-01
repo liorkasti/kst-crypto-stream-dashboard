@@ -13,7 +13,10 @@ async function fetchWithTimeout(url: string, timeoutMs = FETCH_TIMEOUT_MS): Prom
   try {
     return await fetch(url, { signal: controller.signal })
   } catch (err) {
-    if (err instanceof DOMException && err.name === 'AbortError') {
+    // Check `.name` directly rather than gating on `instanceof DOMException`
+    // first — some runtimes/polyfills throw an AbortError-named object that
+    // isn't a real DOMException, which would silently skip this branch.
+    if (err instanceof Error && err.name === 'AbortError') {
       throw new Error(`Request timed out after ${timeoutMs / 1000}s`)
     }
     throw err
