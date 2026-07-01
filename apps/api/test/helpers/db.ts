@@ -15,7 +15,7 @@ export async function seedStaleSnapshot(prisma: PrismaClient): Promise<void> {
       name: 'Bitcoin',
       price: 50_000,
       change24h: 1.5,
-      marketCap: 1_000_000_000,
+      marketCap: BigInt(1_000_000_000),
       updatedAt: new Date(),
     },
   });
