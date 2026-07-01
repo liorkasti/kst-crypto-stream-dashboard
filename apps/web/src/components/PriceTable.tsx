@@ -21,19 +21,16 @@ export function PriceTable({ assets, onSelect }: Props) {
       </TableHeader>
       <TableBody>
         {assets.map((asset) => (
-          <TableRow key={asset.id} onClick={() => onSelect(asset)} className="cursor-pointer">
+          <TableRow key={asset.id}>
             <TableCell className="font-medium">
               {/* role="button" on a <tr> is an invalid ARIA override for
-                  table semantics — a real <button> here gives keyboard
-                  users a proper focus target with native Enter/Space
-                  activation, no manual key handling needed. stopPropagation
-                  avoids double-firing onSelect via the row's own onClick. */}
+                  table semantics, and a row-level onClick made the whole
+                  row a mouse-only activation target while only this button
+                  was keyboard-focusable — a real pointer/keyboard mismatch.
+                  The button is now the only activation surface, for both. */}
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onSelect(asset)
-                }}
+                onClick={() => onSelect(asset)}
                 className="rounded text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
               >
                 {asset.name} <span className="text-gray-400 uppercase">{asset.symbol}</span>
