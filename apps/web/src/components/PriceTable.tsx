@@ -21,7 +21,19 @@ export function PriceTable({ assets, onSelect }: Props) {
       </TableHeader>
       <TableBody>
         {assets.map((asset) => (
-          <TableRow key={asset.id} onClick={() => onSelect(asset)} className="cursor-pointer">
+          <TableRow
+            key={asset.id}
+            onClick={() => onSelect(asset)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onSelect(asset)
+              }
+            }}
+            tabIndex={0}
+            role="button"
+            className="cursor-pointer"
+          >
             <TableCell className="font-medium">
               {asset.name} <span className="text-gray-400 uppercase">{asset.symbol}</span>
             </TableCell>

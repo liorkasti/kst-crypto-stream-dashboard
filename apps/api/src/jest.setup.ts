@@ -8,7 +8,9 @@
 // not a module under test — CommonJS require() runs top-to-bottom in
 // source order, while import statements get hoisted regardless of
 // position, which would break the load-before-anything-else guarantee.
-/* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
 const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 require('dotenv').config();
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
 require('dotenv').config({ path: path.resolve(__dirname, '../.env.example') });

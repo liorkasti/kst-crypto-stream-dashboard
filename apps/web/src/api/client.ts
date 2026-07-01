@@ -30,7 +30,7 @@ async function fetchJsonWithTimeout(
     // first — some runtimes/polyfills throw an AbortError-named object that
     // isn't a real DOMException, which would silently skip this branch.
     if (err instanceof Error && err.name === 'AbortError') {
-      throw new Error(`Request timed out after ${timeoutMs / 1000}s`)
+      throw new Error(`Request for ${label} timed out after ${timeoutMs / 1000}s`)
     }
     throw err
   } finally {

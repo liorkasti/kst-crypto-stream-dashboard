@@ -22,7 +22,9 @@ export function formatPercent(value: number): string {
 
 export function formatSecondsAgo(iso: string | null): string {
   if (!iso) return 'never'
-  const secs = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000))
+  const ts = new Date(iso).getTime()
+  if (Number.isNaN(ts)) return 'unknown'
+  const secs = Math.max(0, Math.floor((Date.now() - ts) / 1000))
   if (secs < 60) return `${secs}s ago`
   const mins = Math.floor(secs / 60)
   if (mins < 60) return `${mins}m ago`

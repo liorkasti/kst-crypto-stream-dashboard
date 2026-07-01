@@ -9,8 +9,10 @@
 // require() (not import) is deliberate here too, for the same hoisting
 // reason as jest.setup.ts — imports would be hoisted above the
 // process.env assignment above, defeating the ordering this file exists for.
-/* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 process.env.SIMULATE_UPSTREAM_DOWN = 'true';
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
 const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 require('dotenv').config();
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
 require('dotenv').config({ path: path.resolve(__dirname, '../.env.example') });

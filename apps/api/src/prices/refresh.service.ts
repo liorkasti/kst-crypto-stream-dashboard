@@ -24,7 +24,10 @@ export class RefreshService {
       const markets = await this.upstream.fetchTopMarkets();
       const now = new Date();
 
-      await this.prisma.$transaction([
+      // upsert() returns the full row, so the transaction result is reused
+      // directly below instead of a follow-up findMany — one fewer DB
+      // round-trip on every tick.
+      const results = await this.prisma.$transaction([
         ...markets.map((m) =>
           this.prisma.asset.upsert({
             where: { symbol: m.symbol },
@@ -52,9 +55,9 @@ export class RefreshService {
         }),
       ]);
 
-      const assets = await this.prisma.asset.findMany({
-        where: { symbol: { in: markets.map((m) => m.symbol) } },
-      });
+      const assets = results.slice(0, -1) as Awaited<
+        ReturnType<typeof this.prisma.asset.upsert>
+      >[];
       const bySymbol = new Map(assets.map((a) => [a.symbol, a]));
 
       await this.prisma.priceHistory.createMany({

@@ -18,7 +18,10 @@ export function DialogContent({ children, className }: { children: ReactNode; cl
         )}
       >
         {children}
-        <RadixDialog.Close className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+        <RadixDialog.Close
+          aria-label="Close"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+        >
           <X className="h-4 w-4" />
         </RadixDialog.Close>
       </RadixDialog.Content>

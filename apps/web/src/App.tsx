@@ -25,7 +25,7 @@ export default function App() {
         <FreshnessBadge
           lastUpdatedAt={data?.lastUpdatedAt ?? null}
           stale={data?.stale ?? true}
-          connected={connection !== 'reconnecting'}
+          connection={connection}
         />
       </header>
 
@@ -37,7 +37,12 @@ export default function App() {
       {selected && (
         <Suspense
           fallback={
-            <div className="fixed inset-0 flex items-center justify-center bg-black/30">
+            <div
+              className="fixed inset-0 flex items-center justify-center bg-black/30"
+              role="status"
+              aria-live="polite"
+              aria-busy="true"
+            >
               <div className="animate-pulse rounded bg-white px-6 py-4 text-sm text-gray-500 shadow-lg">
                 Loading…
               </div>
