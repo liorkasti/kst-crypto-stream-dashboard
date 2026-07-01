@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { Suspense, lazy, useState } from 'react'
 import type { AssetDto } from '@kin/shared'
 import { useLivePrices } from '@/hooks/useLivePrices'
 import { FreshnessBadge } from '@/components/FreshnessBadge'
 import { PriceTable } from '@/components/PriceTable'
-import { CoinDetailModal } from '@/components/CoinDetailModal'
 import { Loading } from '@/components/states/Loading'
 import { Empty } from '@/components/states/Empty'
 import { ErrorState } from '@/components/states/ErrorState'
+
+// recharts is the single largest dependency in the bundle and is only
+// ever needed once a user clicks a coin — deferring it keeps the
+// initial page load lean.
+const CoinDetailModal = lazy(() =>
+  import('@/components/CoinDetailModal').then((m) => ({ default: m.CoinDetailModal })),
+)
 
 export default function App() {
   const { data, connection, error } = useLivePrices()
@@ -28,7 +34,19 @@ export default function App() {
       {data && data.data.length === 0 && <Empty />}
       {data && data.data.length > 0 && <PriceTable assets={data.data} onSelect={setSelected} />}
 
-      <CoinDetailModal asset={selected} onClose={() => setSelected(null)} />
+      {selected && (
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 flex items-center justify-center bg-black/30">
+              <div className="animate-pulse rounded bg-white px-6 py-4 text-sm text-gray-500 shadow-lg">
+                Loading…
+              </div>
+            </div>
+          }
+        >
+          <CoinDetailModal asset={selected} onClose={() => setSelected(null)} />
+        </Suspense>
+      )}
     </div>
   )
 }

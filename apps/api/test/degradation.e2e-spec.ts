@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { PrismaClient } from '@prisma/client';
+import { pricesResponseSchema } from '@kin/shared';
 import { AppModule } from '../src/app.module';
 import { truncateAll, seedStaleSnapshot } from './helpers/db';
 
@@ -39,8 +40,13 @@ describe('Graceful degradation (e2e)', () => {
       .get('/api/prices')
       .expect(200);
 
-    expect(res.body.stale).toBe(true);
-    expect(res.body.data.length).toBeGreaterThan(0);
-    expect(res.body.data[0].symbol).toBe('btc');
+    // Parsing through the shared contract schema (not just asserting on
+    // res.body directly) gives real types instead of `any`, and doubles
+    // as a check that the response actually matches the frontend's contract.
+    const body = pricesResponseSchema.parse(res.body);
+
+    expect(body.stale).toBe(true);
+    expect(body.data.length).toBeGreaterThan(0);
+    expect(body.data[0].symbol).toBe('btc');
   });
 });
