@@ -9,8 +9,7 @@
     "test": "turbo run test",
     "migrate": "pnpm --filter api exec prisma migrate deploy",
     "db:up": "docker run --name kin-pg -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kin -p 5432:5432 -d postgres:16",
-    "db:down": "docker rm -f kin-pg",
-    "pr": "bash scripts/create-pr.sh"
+    "db:down": "docker rm -f kin-pg"
   },
   "devDependencies": {
     "turbo": "^2.3.0"
